@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import LoginForm from "./components/auth/Auth";
 
 class App extends Component {
+
   render() {
     return (
       <div className="App">
@@ -13,6 +15,9 @@ class App extends Component {
         <p className="App-intro">
           In development
         </p>
+        <LoginForm />
+
+
       </div>
     );
   }

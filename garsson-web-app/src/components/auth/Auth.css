@@ -1,0 +1,48 @@
+input {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.div-table {
+    margin: 20px 10px 10px 10px;
+    float:right;
+    display: table;
+    width: auto;
+    border: 1px solid #666666;
+    border-spacing: 5px; /* cellspacing:poor IE support for  this */
+}
+
+.div-table-row {
+    display: inline-block;
+    width: auto;
+    clear: both;
+    float:left;
+    margin-top:5px;
+}
+
+.div-table-col {
+    float: left; /* fix for  buggy browsers */
+    display: inline-block;
+    width: 200px;
+}
+
+.pull-right {
+    float: right
+}
+
+.login-button, .logout-button {
+    float: right;
+    margin-top: 0.5em;
+}
+
+.login-error {
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+    color: red;
+}
+
+.logout-text {
+    display: inline-block;
+    margin: 0.5em;
+    font-weight: bold;
+}
