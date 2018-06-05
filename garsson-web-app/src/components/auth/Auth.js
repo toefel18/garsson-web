@@ -8,11 +8,11 @@ export default class LoginForm extends React.Component {
     state = {
         username: "",
         password: "",
-        loginError: "",
         isLoggedIn: false,
         loggedInAs: "",
         expires: "",
-        roles: []
+        roles: [],
+        loginError: ""
     };
 
     componentWillMount() {
@@ -22,18 +22,17 @@ export default class LoginForm extends React.Component {
     processJwtIfPresent = () => {
         let jwt = localStorage.getItem("jwt");
         if (jwt) {
+            console.log("jwt found, decoding");
             let parsedJwt = jwtDecode(jwt);
             this.setState({
                 loggedInAs: parsedJwt.sub,
                 expires: new Date(parsedJwt.exp * 1000),
-                roles: jwt.roles
+                roles: parsedJwt.roles,
+                isLoggedIn: true
             })
         } else {
-            this.setState({
-                loggedInAs: "",
-                expires: "",
-                roles: []
-            })
+            console.log("no jwt found, resetting login");
+            this.resetLogin()
         }
     };
 
@@ -47,6 +46,8 @@ export default class LoginForm extends React.Component {
 
     handleLogin = (event) => {
         event.preventDefault();
+        this.resetLogin();
+        this.setState({loginError: ""});
         axios.post("http://localhost:8080/api/v1/login", {email: this.state.username, password: this.state.password})
             .then(response => this.doLogin(response))
             .catch(error => {
@@ -57,9 +58,11 @@ export default class LoginForm extends React.Component {
 
     doLogin = (response) => {
         console.log(response);
-        let jwt = response.headers["Authorization"].substring("Bearer ".length);
+        let jwt = response.headers["authorization"].substring("Bearer ".length);
         if (jwt == null || jwt.length < 1) {
             this.setState({loginError: "received invalid or missing JWT from server"})
+        } else {
+            this.setState({password: ""})
         }
         localStorage.setItem("jwt", jwt);
         this.processJwtIfPresent();
@@ -67,41 +70,48 @@ export default class LoginForm extends React.Component {
 
     handleLogout = (event) => {
         event.preventDefault();
+        this.resetLogin()
+    };
+
+    resetLogin = () => {
         localStorage.removeItem("jwt");
+        this.setState({
+            isLoggedIn: false,
+            loggedInAs: "",
+            expires: "",
+            roles: []
+        })
     };
 
     renderLogin() {
         return (
-            <div className="div-table">
-                <form onSubmit={this.handleLogin}>
-                    <div className="div-table-row">
-                        <div className="div-table-col">Username</div>
-                        <div className="div-table-col">
-                            <input type="text"
-                                   id="auth-login-username"
-                                   value={this.state.username}
-                                   onChange={(event) => this.setState({username: event.target.value})}
-                                   placeholder="Username"
-                            />
-                        </div>
-                    </div>
-                    <div className="div-table-row">
-                        <div className="div-table-col">Password</div>
-                        <div className="div-table-col">
-                            <input type="password"
-                                   id="auth-login-password"
-                                   value={this.state.password}
-                                   onChange={(event) => this.setState({password: event.target.value})}
-                            />
-                        </div>
-                    </div>
-                    <div className="div-table-row pull-right">
-                        <button className="login-button" id="auth-login-submit" type="submit">Login</button>
-                    </div>
-                    <div className="div-table-row login-error">
-                        <span>{this.state.loginError}</span>
-                    </div>
+            <div>
+                <form className="form-signin" onSubmit={this.handleLogin}>
+                    <h1 className="h3 mb-3 font-weight-normal">Sign in</h1>
+                    <label htmlFor="inputEmail" className="sr-only">Email address</label>
+                    <input
+                        type="email"
+                        id="inputEmail"
+                        className="form-control"
+                        placeholder="Email address"
+                        value={this.state.username}
+                        onChange={(event) => this.setState({username: event.target.value})}
+
+                        autoFocus />
+                    <label htmlFor="inputPassword" className="sr-only">Password</label>
+                    <input
+                        type="password"
+                        id="inputPassword"
+                        className="form-control"
+                        placeholder="Password"
+                        value={this.state.password}
+                        onChange={(event) => this.setState({password: event.target.value})}
+                         />
+                    <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                 </form>
+                <div className="div-table-row login-error">
+                    <span>{this.state.loginError}</span>
+                </div>
             </div>
         );
     }
@@ -112,9 +122,9 @@ export default class LoginForm extends React.Component {
                 <form onSubmit={this.handleLogout}>
                     <div className="div-table-row">
                         <span className="logout-text">
-                            {this.props.loggedInAs}, session expires at {moment(this.props.expiresAt).format("YYYY-MM-DD HH:mm:ss")}
+                            {this.state.loggedInAs} (roles: {this.state.roles.join(", ")}) session expires at {moment(this.state.expires).format("YYYY-MM-DD HH:mm:ss")}
                         </span>
-                        <button className="logout-button" type="submit">Logout</button>
+                        <button className="btn btn-warning" type="submit">Logout</button>
                     </div>
                 </form>
             </div>

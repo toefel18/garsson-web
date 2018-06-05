@@ -1,48 +1,29 @@
-input {
-    box-sizing: border-box;
+.form-signin {
     width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
 }
-
-.div-table {
-    margin: 20px 10px 10px 10px;
-    float:right;
-    display: table;
-    width: auto;
-    border: 1px solid #666666;
-    border-spacing: 5px; /* cellspacing:poor IE support for  this */
+.form-signin .checkbox {
+    font-weight: 400;
 }
-
-.div-table-row {
-    display: inline-block;
-    width: auto;
-    clear: both;
-    float:left;
-    margin-top:5px;
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
 }
-
-.div-table-col {
-    float: left; /* fix for  buggy browsers */
-    display: inline-block;
-    width: 200px;
+.form-signin .form-control:focus {
+    z-index: 2;
 }
-
-.pull-right {
-    float: right
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
-
-.login-button, .logout-button {
-    float: right;
-    margin-top: 0.5em;
-}
-
-.login-error {
-    margin-top: 0.5em;
-    margin-right: 0.5em;
-    color: red;
-}
-
-.logout-text {
-    display: inline-block;
-    margin: 0.5em;
-    font-weight: bold;
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
