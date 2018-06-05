@@ -52,7 +52,7 @@ export default class LoginForm extends React.Component {
             .then(response => this.doLogin(response))
             .catch(error => {
                 console.log(error);
-                this.setState({loginError: error.message})
+                this.setState({loginError: error.response.data.message})
             });
     };
 
