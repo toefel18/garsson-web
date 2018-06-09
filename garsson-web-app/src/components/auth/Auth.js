@@ -2,42 +2,16 @@ import React from "react";
 import "./Auth.css";
 import moment from "moment";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
 
-export default class LoginForm extends React.Component {
+export default class Auth extends React.Component {
     state = {
         username: "",
         password: "",
-        isLoggedIn: false,
-        loggedInAs: "",
-        expires: "",
-        roles: [],
         loginError: ""
     };
 
-    componentWillMount() {
-        this.processJwtIfPresent()
-    }
-
-    processJwtIfPresent = () => {
-        let jwt = localStorage.getItem("jwt");
-        if (jwt) {
-            console.log("jwt found, decoding");
-            let parsedJwt = jwtDecode(jwt);
-            this.setState({
-                loggedInAs: parsedJwt.sub,
-                expires: new Date(parsedJwt.exp * 1000),
-                roles: parsedJwt.roles,
-                isLoggedIn: true
-            })
-        } else {
-            console.log("no jwt found, resetting login");
-            this.resetLogin()
-        }
-    };
-
     render() {
-        if (this.state.isLoggedIn) {
+        if (this.props.user) {
             return this.renderLogout()
         } else {
             return this.renderLogin()
@@ -46,14 +20,23 @@ export default class LoginForm extends React.Component {
 
     handleLogin = (event) => {
         event.preventDefault();
-        this.resetLogin();
         this.setState({loginError: ""});
-        axios.post("http://localhost:8080/api/v1/login", {email: this.state.username, password: this.state.password})
+
+        axios.post(this.props.apiBaseUrl + "/v1/login", {email: this.state.username, password: this.state.password})
             .then(response => this.doLogin(response))
             .catch(error => {
                 console.log(error);
-                this.setState({loginError: error.response.data.message})
+                if (error.response && error.response.data.message) {
+                    this.setState({loginError: error.response.data.message})
+                } else {
+                    this.setState({loginError: error.message})
+                }
             });
+    };
+
+    handleLogout = (event) => {
+        event.preventDefault();
+        this.props.onLogout()
     };
 
     doLogin = (response) => {
@@ -62,25 +45,10 @@ export default class LoginForm extends React.Component {
         if (jwt == null || jwt.length < 1) {
             this.setState({loginError: "received invalid or missing JWT from server"})
         } else {
-            this.setState({password: ""})
+            this.setState({password: ""}) // make sure this doesn't linger around
         }
         localStorage.setItem("jwt", jwt);
-        this.processJwtIfPresent();
-    };
-
-    handleLogout = (event) => {
-        event.preventDefault();
-        this.resetLogin()
-    };
-
-    resetLogin = () => {
-        localStorage.removeItem("jwt");
-        this.setState({
-            isLoggedIn: false,
-            loggedInAs: "",
-            expires: "",
-            roles: []
-        })
+        this.props.onLogin();
     };
 
     renderLogin() {
@@ -97,7 +65,7 @@ export default class LoginForm extends React.Component {
                         value={this.state.username}
                         onChange={(event) => this.setState({username: event.target.value})}
 
-                        autoFocus />
+                        autoFocus/>
                     <label htmlFor="inputPassword" className="sr-only">Password</label>
                     <input
                         type="password"
@@ -106,7 +74,7 @@ export default class LoginForm extends React.Component {
                         placeholder="Password"
                         value={this.state.password}
                         onChange={(event) => this.setState({password: event.target.value})}
-                         />
+                    />
                     <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                 </form>
                 <div className="div-table-row login-error">
@@ -122,7 +90,7 @@ export default class LoginForm extends React.Component {
                 <form onSubmit={this.handleLogout}>
                     <div className="div-table-row">
                         <span className="logout-text">
-                            {this.state.loggedInAs} (roles: {this.state.roles.join(", ")}) session expires at {moment(this.state.expires).format("YYYY-MM-DD HH:mm:ss")}
+                            {this.props.user.email} (roles: {this.props.user.roles.join(", ")}) session expires at {moment(this.props.user.expires).format("YYYY-MM-DD HH:mm:ss")}
                         </span>
                         <button className="btn btn-warning" type="submit">Logout</button>
                     </div>
