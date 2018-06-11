@@ -3,7 +3,7 @@ import './App.css';
 import Auth from "./components/auth/Auth";
 import Nav from "./components/nav/Nav";
 import Bar from "./components/bar/Bar";
-import Order from "./components/order/Order";
+import NewOrder from "./components/order/NewOrder";
 import axios from "axios";
 import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
 import jwtDecode from "jwt-decode";
@@ -44,7 +44,17 @@ class App extends Component {
             console.log("jwt found, decoding");
             let parsedJwt = jwtDecode(jwt);
             let user = this.extractUser(parsedJwt);
-            this.setState({user: user});
+            if (user.expires < new Date()) {
+                console.log("jwt expired at " + user.expires);
+                this.onLogout()
+            } else {
+                let millisTillExpire = user.expires - new Date();
+                setTimeout(() => {
+                    alert("logging out, session expired");
+                    this.onLogout()
+                }, millisTillExpire);
+                this.setState({user: user});
+            }
         } else {
             console.log("no jwt found, resetting login");
             this.onLogout()
@@ -113,7 +123,7 @@ class App extends Component {
                     (route) => {
                         return (
                             this.state.user
-                                ? <Order/>
+                                ? <NewOrder/>
                                 : <Redirect to="/login"/>
                         )
                     }

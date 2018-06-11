@@ -1,7 +1,7 @@
 import React from "react";
-import "./Order.css";
+import "./NewOrder.css";
 
-export default class Order extends React.Component {
+export default class NewOrder extends React.Component {
     render() {
         return (
             <div>Order</div>
