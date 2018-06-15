@@ -32,6 +32,7 @@ class App extends Component {
     onLogout = () => {
         localStorage.removeItem("jwt");
         this.setState({user: undefined});
+        axios.defaults.headers.common['Authorization'] = "";
     };
 
     onLogin = () => {
@@ -54,6 +55,7 @@ class App extends Component {
                     this.onLogout()
                 }, millisTillExpire);
                 this.setState({user: user});
+                axios.defaults.headers.common['Authorization'] = "Bearer " + jwt;
             }
         } else {
             console.log("no jwt found, resetting login");
@@ -114,7 +116,7 @@ class App extends Component {
                     (route) => {
                         return (
                             this.state.user
-                                ? <Bar/>
+                                ? <Bar apiBaseUrl={this.state.apiBaseUrl} />
                                 : <Redirect to="/login"/>
                         )
                     }
