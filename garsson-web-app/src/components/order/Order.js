@@ -4,42 +4,67 @@ import "./Order.css";
 export default class Order extends React.Component {
     render() {
         if (this.props.order) {
-
-            let products = this.props.order.orderLines.map(line => {
-                let price = (line.quantity * line.productPriceInCents) / 100.0;
-                return (<li className="list-group-item">{line.quantity} x {line.productBrand} {line.productName} = &euro;{price}</li>);
-            });
-
+            let products = this.renderProductsTable();
 
             return (
-                <div className="row justify-content-md-center">
-                    <div className="card col-sm-3">
-                        {/*<img className="card-img-top" src="blaat.jpg" alt="Card image cap"/>*/}
-                        <div className="card-body">
-                            <h5 className="card-title">{this.props.order.customerName}</h5>
-                            <span className="label label-warning">{this.props.order.status}</span>
-                            <p className="card-text">
-                                {this.props.order.waiter}<br />
-                                created:{this.props.order.timeCreated}
-                            </p>
-                        </div>
-                        <ul className="list-group list-group-flush">
-                            {products}
-                            <li className="list-group-item">Cras justo odio</li>
-                            <li className="list-group-item">Dapibus ac facilisis in</li>
-                            <li className="list-group-item">Vestibulum at eros</li>
-                        </ul>
-                        <div className="card-body">
-                            <a href="#" className="card-link">Card link</a>
-                            <a href="#" className="card-link">Another link</a>
-                        </div>
+                <div className="card text-left min-width-100">
+                    <div className="card-body">
+                        <h5 className="card-title">
+                            <span className="badge badge-warning float-left">{this.props.order.status}</span>
+                            &nbsp; {this.props.order.customerName}
+                            <button className="btn btn-outline-danger btn-sm float-right">Cancel</button>
+                        </h5>
+
+                        <p className="card-text">
+                            {this.props.order.waiter}<br/>
+                            created:{this.props.order.timeCreated}
+                        </p>
+                    </div>
+                    {products}
+                    <div className="card-body">
+                        <button className="btn btn-dark btn-sm ">Ready at bar</button>
+                        &nbsp;
+                        <button className="btn btn-success btn-sm float-right">Pay</button>
                     </div>
                 </div>
             )
         } else {
             return (
-                <div>no order set</div>
+                <div>...</div>
             )
         }
     }
+
+    renderProductsTable = () => {
+        let productLines = this.props.order.orderLines.map(line => {
+            let price = (line.quantity * line.productPriceInCents) / 100.0;
+            return (
+                <tr key={line.productBrand + line.productName}>
+                    <td>&nbsp;&nbsp;{line.quantity}</td>
+                    <td>{line.productBrand} {line.productName}</td>
+                    <td className="text-right">&euro;</td>
+                    <td className="text-left">{price}</td>
+                </tr>
+            );
+        });
+
+        let totalPriceInCents = this.props.order.orderLines
+            .map(orderLine => orderLine.quantity * orderLine.productPriceInCents)
+            .reduce((a, b) => a + b);
+
+        let totalPrice = totalPriceInCents / 100.0;
+
+        let totalLine = (
+            <tr key="total" className="font-weight-bold">
+                <td/>
+                <td>Total</td>
+                <td className="text-right">&euro;</td>
+                <td className="text-left">{totalPrice}</td>
+            </tr>);
+
+        return <table className="table table-sm">
+            <tbody>{productLines}{totalLine}</tbody>
+        </table>;
+    };
+
 }

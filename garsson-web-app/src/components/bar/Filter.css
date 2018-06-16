@@ -1,0 +1,19 @@
+/* override the solid background of the buttons on hover
+   this does not look nice, especially on mobile devices. */
+
+.btn-outline-primary:hover {
+    background-color: transparent !important;
+    color:#007bff !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: transparent !important;
+    color:#c82333 !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: transparent !important;
+    color:#ffc107 !important;
+}
+
+
