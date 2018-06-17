@@ -62,7 +62,30 @@ export default class Bar extends React.Component {
                 <div className="card-columns">
                     {orders}
                 </div>
+                <button className="btn btn-primary" onClick={this.openWebSocket}>Open WebSocket</button>
             </div>
         )
+    }
+
+    openWebSocket = () => {
+        let url = this.props.apiBaseUrl + "/v1/orders/ws-eventstream";
+        url = url.replace("https", "wss").replace("http", "ws");
+        console.log(url);
+        let ws = new WebSocket(url);
+        ws.onopen = (evt) => {
+            alert(evt.data)
+        };
+        ws.onmessage = (evt) => {
+            alert(evt.data)
+        };
+        ws.onclose = (evt) => {
+            alert("on close");
+            alert(evt);
+        };
+        ws.onerror = (evt) => {
+            alert("on error");
+            alert(evt);
+        };
+
     }
 }
