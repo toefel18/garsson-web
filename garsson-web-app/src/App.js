@@ -125,7 +125,9 @@ class App extends Component {
                     (route) => {
                         return (
                             this.state.user
-                                ? <NewOrder/>
+                                ? <div className="p-3 container-fluid justify-content-center">
+                                    <NewOrder user={this.state.user}/>
+                                  </div>
                                 : <Redirect to="/login"/>
                         )
                     }

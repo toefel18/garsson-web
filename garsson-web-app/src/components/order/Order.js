@@ -7,7 +7,7 @@ export default class Order extends React.Component {
             let products = this.renderProductsTable();
 
             return (
-                <div className="card text-left min-width-100">
+                <div className="card text-left">
                     <div className="card-body">
                         <h5 className="card-title">
                             <span className="badge badge-warning float-left">{this.props.order.status}</span>
