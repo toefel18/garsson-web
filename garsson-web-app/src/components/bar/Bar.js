@@ -54,7 +54,7 @@ export default class Bar extends React.Component {
     };
 
     render() {
-        let orders = this.state.orders ? this.state.orders.map(order => <Order key={order.id} order={order}/>) : "";
+        let orders = this.state.orders ? this.state.orders.map(order => <Order key={order.orderId} order={order}/>) : "";
 
         return (
             <div className="container-fluid text-left">

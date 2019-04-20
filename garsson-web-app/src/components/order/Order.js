@@ -4,7 +4,7 @@ import "./Order.css";
 export default class Order extends React.Component {
     render() {
         if (this.props.order) {
-            let products = this.renderProductsTable();
+            const products = this.renderProductsTable();
 
             return (
                 <div className="card text-left">
@@ -16,8 +16,8 @@ export default class Order extends React.Component {
                         </h5>
 
                         <p className="card-text">
-                            {this.props.order.waiter}<br/>
-                            created:{this.props.order.timeCreated}
+                            {this.props.order.waiterId}<br/>
+                            created:{this.props.order.createdTime}
                         </p>
                     </div>
                     {products}
@@ -36,25 +36,21 @@ export default class Order extends React.Component {
     }
 
     renderProductsTable = () => {
-        let productLines = this.props.order.orderLines.map(line => {
-            let price = (line.quantity * line.productPriceInCents) / 100.0;
+        const productLines = this.props.order.orderLines.map(line => {
+            const price = (line.quantity * line.product.productPrice);
             return (
-                <tr key={line.productBrand + line.productName}>
+                <tr key={line.product.productId}>
                     <td>&nbsp;&nbsp;{line.quantity}</td>
-                    <td>{line.productBrand} {line.productName}</td>
+                    <td>{line.product.productId}</td>
                     <td className="text-right">&euro;</td>
                     <td className="text-left">{price}</td>
                 </tr>
             );
         });
 
-        let totalPriceInCents = this.props.order.orderLines
-            .map(orderLine => orderLine.quantity * orderLine.productPriceInCents)
-            .reduce((a, b) => a + b);
+        const totalPrice = this.props.order.totalPrice;
 
-        let totalPrice = totalPriceInCents / 100.0;
-
-        let totalLine = (
+        const totalLine = (
             <tr key="total" className="font-weight-bold">
                 <td/>
                 <td>Total</td>
